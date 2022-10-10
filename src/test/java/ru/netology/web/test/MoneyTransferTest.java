@@ -16,6 +16,7 @@ import static com.codeborne.selenide.Selenide.open;
 public class MoneyTransferTest {
     @BeforeEach
     public void shouldLogin() {
+        Configuration.holdBrowserOpen = true;
         open("http://localhost:9999");
         var loginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
@@ -33,7 +34,7 @@ public class MoneyTransferTest {
         int destinCardIndex = 1;
         int amount = 50;
         cardsPage.transfer(destinCardIndex)
-                .Transfer(amount, DataHelper.getFirstCardNumber().getNumber());
+                .transfer(amount, DataHelper.getFirstCardNumber().getNumber());
         var curBalanceFirst = cardsPage.getFirstCardBalance();
         var curBalanceSecond = cardsPage.getSecondCardBalance();
         Assertions.assertEquals(initBalanceFirst - amount, curBalanceFirst);
@@ -50,25 +51,27 @@ public class MoneyTransferTest {
         int destinCardIndex = 0;
         int amount = 50;
         cardsPage.transfer(destinCardIndex)
-                .Transfer(amount, DataHelper.getSecondCardNumber().getNumber());
+                .transfer(amount, DataHelper.getSecondCardNumber().getNumber());
         var curBalanceFirst = cardsPage.getFirstCardBalance();
         var curBalanceSecond = cardsPage.getSecondCardBalance();
         Assertions.assertEquals(initBalanceFirst + amount, curBalanceFirst);
         Assertions.assertEquals(initBalanceSecond - amount, curBalanceSecond);
     }
-//    @Test
-//    @DisplayName("Get error massage with transfer from first card to second above balance")
-//    public void shouldAboveBalanceFromFirstToSecond() {
-//        var cardsPage = new CardsPage();
-//        var transferMoneyPage = new TransferMoneyPage();
-//        var initBalanceFirst = cardsPage.getFirstCardBalance();
-//        var initBalanceSecond = cardsPage.getSecondCardBalance();
-//        int destinCardIndex = 1;
-//        int amount = 25_000;
-//        cardsPage.transfer(destinCardIndex)
-//                .Transfer(amount, DataHelper.getFirstCardNumber().getNumber());
-//        transferMoneyPage.getErrorTransfer().shouldBe(Condition.visible);
-//        transferMoneyPage.getErrorTransfer().shouldHave(Condition.exactText());
-//    }
+
+    @Test
+    @DisplayName("Get error massage with transfer from first card to second above balance")
+    public void shouldAboveBalanceFromFirstToSecond() {
+        var cardsPage = new CardsPage();
+        var transferMoneyPage = new TransferMoneyPage();
+        var initBalanceFirst = cardsPage.getFirstCardBalance();
+        var initBalanceSecond = cardsPage.getSecondCardBalance();
+        int destinCardIndex = 1;
+        int amount = 25_000;
+        cardsPage.transfer(destinCardIndex)
+                .transfer(amount, DataHelper.getFirstCardNumber().getNumber());
+        transferMoneyPage.getError();
+        Assertions.assertEquals(10_000, initBalanceFirst);
+        Assertions.assertEquals(10_000, initBalanceSecond);
+    }
 
 }

@@ -62,14 +62,13 @@ public class MoneyTransferTest {
     @DisplayName("Get error massage with transfer from first card to second above balance")
     public void shouldAboveBalanceFromFirstToSecond() {
         var cardsPage = new CardsPage();
-        var transferMoneyPage = new TransferMoneyPage();
         var initBalanceFirst = cardsPage.getFirstCardBalance();
         var initBalanceSecond = cardsPage.getSecondCardBalance();
         int destinCardIndex = 1;
         int amount = 25_000;
-        cardsPage.transfer(destinCardIndex)
-                .transfer(amount, DataHelper.getFirstCardNumber().getNumber());
-        transferMoneyPage.getError();
+        var mPage = cardsPage.transfer(destinCardIndex);
+        mPage.transfer(amount, DataHelper.getFirstCardNumber().getNumber());
+        mPage.getError();
         Assertions.assertEquals(10_000, initBalanceFirst);
         Assertions.assertEquals(10_000, initBalanceSecond);
     }
